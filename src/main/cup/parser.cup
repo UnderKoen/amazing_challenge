@@ -1,0 +1,91 @@
+package parser;
+
+import java_cup.runtime.Scanner;
+import java_cup.runtime.SymbolFactory;
+import java.util.List;
+import java.util.ArrayList;
+import nl.underkoen.amazing_challenge.components.*;
+
+class Parser;
+
+terminal SPACE, NEW_LINE;
+terminal USE, WHILE, IF, ELSE, OPEN, CLOSE;
+terminal EYE, COLOR_EYE, COMPASS;
+terminal FORWARD, BACKWARD, LEFT, RIGHT;
+terminal PLUS, MINUS, TIMES, DIVIDE, MODULO;
+terminal EQUAL, NOT_EQUAL, BIGGER, SMALLER;
+terminal ASSIGN;
+
+terminal Integer NUMBER;
+terminal String VARIABLE;
+
+non terminal Program program;
+non terminal InitBlock initBlock;
+non terminal List<InitStatement> initStatements;
+non terminal InitStatement initStatement;
+non terminal ProgramBlock programBlock;
+non terminal List<Statement> statements;
+non terminal Statement statement;
+non terminal Statement assignment;
+non terminal Statement while;
+non terminal Statement ifElse;
+non terminal Statement.If if;
+non terminal Statement function;
+non terminal Expression expression;
+non terminal Comparison comparison;
+
+precedence left MINUS, MODULO, PLUS, TIMES, DIVIDE, SPACE;
+
+
+program ::= initBlock:i programBlock:p {: RESULT = new Program(i, p); :};
+
+initBlock ::= initStatements:isl {: RESULT = new InitBlock(isl); :};
+
+initStatements ::= initStatements:isl initStatement:is NEW_LINE     {: isl.add(is); RESULT = isl; :}
+                |                                                   {: RESULT = new ArrayList<InitStatement>(); :};
+
+initStatement ::= USE SPACE VARIABLE:n {: RESULT = InitStatement.variable(n); :}
+               |  USE SPACE EYE {: RESULT = InitStatement.eye(); :}
+               |  USE SPACE COLOR_EYE {: RESULT = InitStatement.colorEye(); :}
+               |  USE SPACE COMPASS {: RESULT = InitStatement.compass(); :};
+
+
+programBlock ::= statements:sl {: RESULT = new ProgramBlock(sl); :};
+
+statements ::= statements:sl statement:s NEW_LINE       {: sl.add(s); RESULT = sl; :}
+            |                                           {: RESULT = new ArrayList<Statement>(); :};
+
+statement ::= assignment:a      {: RESULT = a; :}
+           |  while:w           {: RESULT = w; :}
+           |  ifElse:i          {: RESULT = i; :}
+           |  function:f        {: RESULT = f; :};
+
+assignment ::= VARIABLE:n SPACE ASSIGN SPACE expression:e {: RESULT = Statement.assign(n, e); :};
+
+expression ::= expression:e1 SPACE PLUS SPACE expression:e2         {: RESULT = Expression.add(e1, e2); :}
+            |  expression:e1 SPACE MINUS SPACE expression:e2        {: RESULT = Expression.min(e1, e2); :}
+            |  expression:e1 SPACE TIMES SPACE expression:e2        {: RESULT = Expression.times(e1, e2); :}
+            |  expression:e1 SPACE DIVIDE SPACE expression:e2       {: RESULT = Expression.divide(e1, e2); :}
+            |  expression:e1 SPACE MODULO SPACE expression:e2       {: RESULT = Expression.modulo(e1, e2); :}
+            |  NUMBER:n                                             {: RESULT = Expression.number(n); :}
+            |  VARIABLE:n                                           {: RESULT = Expression.variable(n);; :}
+            |  EYE                                                  {: RESULT = Expression.eye(); :}
+            |  COLOR_EYE                                            {: RESULT = Expression.colorEye(); :}
+            |  COMPASS                                              {: RESULT = Expression.compass(); :};
+
+while ::= WHILE SPACE comparison:c SPACE OPEN NEW_LINE programBlock:p CLOSE {: RESULT = Statement.whileStat(c, p); :};
+
+comparison ::= expression:e1 SPACE EQUAL SPACE expression:e2        {: RESULT = Comparison.equal(e1, e2); :}
+            |  expression:e1 SPACE NOT_EQUAL SPACE expression:e2    {: RESULT = Comparison.notEqual(e1, e2); :}
+            |  expression:e1 SPACE BIGGER SPACE expression:e2       {: RESULT = Comparison.bigger(e1, e2); :}
+            |  expression:e1 SPACE SMALLER SPACE expression:e2      {: RESULT = Comparison.smaller(e1, e2); :};
+
+ifElse ::= if:i                                                     {: RESULT = Statement.ifElse(i, null); :}
+        |  if:i SPACE ELSE SPACE OPEN NEW_LINE programBlock:p CLOSE {: RESULT = Statement.ifElse(i, p); :};
+
+if ::= IF SPACE comparison:c SPACE OPEN NEW_LINE programBlock:p CLOSE {: RESULT = new Statement.If(c, p); :};
+
+function ::= FORWARD        {: RESULT = Statement.forward(); :}
+          |  BACKWARD       {: RESULT = Statement.backward(); :}
+          |  LEFT           {: RESULT = Statement.left(); :}
+          |  RIGHT          {: RESULT = Statement.right(); :};
