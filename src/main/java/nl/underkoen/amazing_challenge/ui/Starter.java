@@ -41,6 +41,7 @@ public class Starter extends Application {
     private void run(String code) {
         if (run != null) run.interrupt();
         run = new Thread(() -> {
+            System.out.println("\n\n\n\n");
             System.out.println("=== Running ===");
             try {
                 Glade runGlade = new Glade(currentGlade.getMap());

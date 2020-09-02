@@ -32,7 +32,9 @@ public class Runner {
             System.out.println(e.getMessage());
         }
 
-        System.out.println("Ending money " + context.getRemainingMoney());
-        System.out.println(context.variableStorage);
+        System.out.println("Geld verdient: " + context.getMoneyEarned());
+        System.out.println("Geld uitgegeven: " + context.getMoneySpend());
+        System.out.println("Eind kapitaal: " + context.getRemainingMoney());
+        System.out.println("Variable waardes: " + context.variableStorage);
     }
 }

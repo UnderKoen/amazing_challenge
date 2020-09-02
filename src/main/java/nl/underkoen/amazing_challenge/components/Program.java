@@ -16,7 +16,9 @@ public class Program implements Runnable {
 
     @Override
     public void run(Context context) {
-        context.spendMoney(programBlock.getPrice(context.priceTable));
+        int price = programBlock.getPrice(context.priceTable);
+        context.spendMoney(price);
+        System.out.println("Kosten van de code " + price);
         initBlock.run(context);
         programBlock.run(context);
     }

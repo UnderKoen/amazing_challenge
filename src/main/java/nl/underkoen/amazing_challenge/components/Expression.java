@@ -21,7 +21,7 @@ public class Expression {
 
     public static Expression combine(Expression e1, Expression e2, BiFunction<Integer, Integer, Integer> function) {
         return new Expression(c -> {
-            c.spendMoney(c.priceTable.getCalculate());
+            c.spendMoney(c.priceTable.getCalculate(), "berekenen");
             return function.apply(e1.calculate(c), e2.calculate(c));
         });
     }

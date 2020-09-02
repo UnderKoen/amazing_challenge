@@ -14,17 +14,17 @@ public class HardwareContainer {
     }
 
     public void enableEye() {
-        context.spendMoney(context.priceTable.getBuyEye());
+        context.spendMoney(context.priceTable.getBuyEye(), "kopen zwOog");
         this.eyeEnabled = true;
     }
 
     public void enableColorEye() {
-        context.spendMoney(context.priceTable.getBuyColorEye());
+        context.spendMoney(context.priceTable.getBuyColorEye(), "kopen kleurOog");
         this.colorEyeEnabled = true;
     }
 
     public void enableCompass() {
-        context.spendMoney(context.priceTable.getBuyCompass());
+        context.spendMoney(context.priceTable.getBuyCompass(), "kopen kompass");
         this.compassEnabled = true;
     }
 

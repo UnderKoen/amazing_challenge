@@ -16,7 +16,7 @@ public class Comparison {
     }
 
     public boolean calculate(Context context) {
-        context.spendMoney(context.priceTable.getCompare());
+        context.spendMoney(context.priceTable.getCompare(), "vergelijken");
         return function.apply(context);
     }
 

@@ -20,13 +20,13 @@ public class VariableStorage {
     }
 
     public void store(String var, int val) {
-        context.spendMoney(context.priceTable.getAssignment());
+        context.spendMoney(context.priceTable.getAssignment(), "toewijzen variable (" + var + " = " + val + ")");
         if (!variables.containsKey(var)) throw new RuntimeException(String.format("Variable %s is not bought", var));
         variables.put(var, val);
     }
 
     public void register(String val) {
-        context.spendMoney(context.priceTable.getBuyVariable());
+        context.spendMoney(context.priceTable.getBuyVariable(), "kopen variable (" + val + ")");
         variables.put(val, 0);
     }
 

@@ -56,7 +56,7 @@ public class MapController {
         this.x += dx;
         this.y += dy;
 
-        current = context.glade.getTile(x, y);
+        current = next;
         context.glade.setTile(x, y, new Tile(Tile.MapType.START, rotation));
 
         activateTile(current);
@@ -85,6 +85,7 @@ public class MapController {
             case BONUS -> {
                 int score = (int) Math.pow(2, number);
                 context.earnMoney(score);
+                System.out.println("Bonus van " + score + "gepakt");
 
                 current = new Tile(Tile.MapType.COLOR, 4);
             }
@@ -149,26 +150,26 @@ public class MapController {
     }
 
     public void forward() {
-        context.spendMoney(context.priceTable.getForward());
+        context.spendMoney(context.priceTable.getForward(), "stap vooruit");
 
         move(getDX(), getDY());
     }
 
     public void back() {
-        context.spendMoney(context.priceTable.getBack());
+        context.spendMoney(context.priceTable.getBack(), "stap achteruit");
 
         move(-getDX(), -getDY());
     }
 
     public void left() {
-        context.spendMoney(context.priceTable.getLeft());
+        context.spendMoney(context.priceTable.getLeft(), "draai links");
 
         rotate(-1);
         activateTile(current);
     }
 
     public void right() {
-        context.spendMoney(context.priceTable.getRight());
+        context.spendMoney(context.priceTable.getRight(), "draai rechts");
 
         rotate(1);
         activateTile(current);
@@ -176,19 +177,19 @@ public class MapController {
 
     public int eye() {
         if (!context.hardwareContainer.isEyeEnabled()) throw new RuntimeException("Black white eye is not bought");
-        context.spendMoney(context.priceTable.getUseEye());
+        context.spendMoney(context.priceTable.getUseEye(), "zwOog (" +  current.getColorBi() + ")");
         return current.getColorBi();
     }
 
     public int colorEye() {
         if (!context.hardwareContainer.isColorEyeEnabled()) throw new RuntimeException("Color eye is not bought");
-        context.spendMoney(context.priceTable.getUseColorEye());
+        context.spendMoney(context.priceTable.getUseColorEye(), "kleurOog (" + current.getColor() + ")");
         return current.getColor();
     }
 
     public int compass() {
         if (!context.hardwareContainer.isCompassEnabled()) throw new RuntimeException("Compass is not bought");
-        context.spendMoney(context.priceTable.getUseCompass());
+        context.spendMoney(context.priceTable.getUseCompass(), "kompass (" + rotation + ")");
         return rotation;
     }
 }

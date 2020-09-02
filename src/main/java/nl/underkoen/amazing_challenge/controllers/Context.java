@@ -25,16 +25,15 @@ public class Context {
 
     public void earnMoney(int amount) {
         moneyEarned += amount;
-        printMoneyInfo("earned", amount);
     }
 
     public void spendMoney(int amount) {
         moneySpend += amount;
-        printMoneyInfo("spend", amount);
     }
 
-    public void printMoneyInfo(String what, int amount) {
-        System.out.printf("just %s %s, total spending: %s, total earning: %s, money left: %s%n", what, amount, moneySpend, moneyEarned, getRemainingMoney());
+    public void spendMoney(int amount, String what) {
+        System.out.println("Kosten voor " + what + " " + amount);
+        spendMoney(amount);
     }
 
     public int getMoneySpend() {
