@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 /**
  * @author Under_Koen
  */
-public class EditorView {
+public abstract class EditorView {
     private static final OS os = new OS();
 
     private final Consumer<String> run;
@@ -54,7 +54,11 @@ public class EditorView {
         run.setAccelerator(new KeyCodeCombination(KeyCode.R, mod));
         run.setOnAction(this::run);
 
-        runMenu.getItems().addAll(run);
+        MenuItem stop = new MenuItem("Stop");
+        stop.setAccelerator(new KeyCodeCombination(KeyCode.E, mod));
+        stop.setOnAction(this::stop);
+
+        runMenu.getItems().addAll(run, stop);
 
         editor.getMenuBar().getMenus().addAll(runMenu);
     }
@@ -62,4 +66,6 @@ public class EditorView {
     private void run(Object o) {
         run.accept(editor.getText());
     }
+
+    protected abstract void stop(Object o);
 }

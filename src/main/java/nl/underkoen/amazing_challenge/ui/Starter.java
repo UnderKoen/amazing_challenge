@@ -12,6 +12,7 @@ public class Starter extends Application {
     private EditorView editorView;
     private MapView mapView;
     private Glade currentGlade;
+    private Thread run;
 
     public static void launch() {
         Application.launch();
@@ -19,7 +20,14 @@ public class Starter extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        editorView = new EditorView(this::run);
+        editorView = new EditorView(this::run) {
+            @Override
+            protected void stop(Object o) {
+                if (run != null) {
+                    run.interrupt();
+                }
+            }
+        };
         mapView = new MapView(this::update);
 
         mapView.show();
@@ -27,7 +35,8 @@ public class Starter extends Application {
     }
 
     private void run(String code) {
-        new Thread(() -> {
+        if (run != null) run.interrupt();
+        run = new Thread(() -> {
             System.out.println("=== Running ===");
             try {
                 Glade runGlade = new Glade(currentGlade.getMap());
@@ -36,9 +45,9 @@ public class Starter extends Application {
                 Runner.compileAndRun(code, runGlade);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
-                e.printStackTrace();
             }
-        }).start();
+        });
+        run.start();
     }
 
     private void update(String code) {

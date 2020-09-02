@@ -37,7 +37,8 @@ non terminal Comparison comparison;
 precedence left MINUS, MODULO, PLUS, TIMES, DIVIDE, SPACE;
 
 
-program ::= initBlock:i programBlock:p {: RESULT = new Program(i, p); :};
+program ::= initBlock:i programBlock:p {: RESULT = new Program(i, p); :}
+         |  NEW_LINE initBlock:i programBlock:p {: RESULT = new Program(i, p); :};
 
 initBlock ::= initStatements:isl {: RESULT = new InitBlock(isl); :};
 
