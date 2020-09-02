@@ -1,6 +1,5 @@
 package nl.underkoen.amazing_challenge.ui;
 
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -27,7 +26,7 @@ public abstract class EditorView {
         this.run = run;
 
         editor = new FXEditor();
-        display = new FXDisplay<>(new Size(350, 500), editor);
+        display = new FXDisplay<>(new Size(400, 700), editor);
         generateMenu();
 
         System.setOut(new CustomPrintStream(System.out, s -> {

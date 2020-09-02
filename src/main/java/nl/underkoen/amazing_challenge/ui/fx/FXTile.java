@@ -1,4 +1,4 @@
-package nl.underkoen.amazing_challenge.ui;
+package nl.underkoen.amazing_challenge.ui.fx;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;

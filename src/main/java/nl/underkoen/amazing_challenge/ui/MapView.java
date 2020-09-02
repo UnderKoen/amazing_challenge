@@ -9,6 +9,7 @@ import nl.edulogo.core.Size;
 import nl.edulogo.display.fx.FXDisplay;
 import nl.edulogo.editor.fx.FXEditor;
 import nl.underkoen.amazing_challenge.models.Glade;
+import nl.underkoen.amazing_challenge.ui.fx.FXGlade;
 
 import java.util.function.Consumer;
 

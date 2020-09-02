@@ -1,4 +1,4 @@
-package nl.underkoen.amazing_challenge.ui;
+package nl.underkoen.amazing_challenge.ui.fx;
 
 import javafx.application.Platform;
 import javafx.geometry.Pos;
@@ -15,13 +15,10 @@ import nl.underkoen.amazing_challenge.models.Tile;
  * @author Under_Koen
  */
 public class FXGlade implements FXView {
-    private StackPane node;
     private VBox rows;
     private HBox[] columns;
 
     public FXGlade() {
-        node = new StackPane();
-
         rows = new VBox();
         rows.setAlignment(Pos.CENTER);
         columns = new HBox[20];
@@ -31,8 +28,6 @@ public class FXGlade implements FXView {
             columns[i] = column;
             rows.getChildren().add(column);
         }
-
-        node.getChildren().add(rows);
     }
 
     public void showGlade(Glade glade) {

@@ -26,6 +26,8 @@ public class PriceTable {
     private int functionLine = 20;
     private int assignmentLine = 10;
 
+    private int startMoney = 2020;
+
     public int getBuyCompass() {
         return buyCompass;
     }
@@ -176,5 +178,13 @@ public class PriceTable {
 
     public void setAssignmentLine(int assignmentLine) {
         this.assignmentLine = assignmentLine;
+    }
+
+    public int getStartMoney() {
+        return startMoney;
+    }
+
+    public void setStartMoney(int startMoney) {
+        this.startMoney = startMoney;
     }
 }

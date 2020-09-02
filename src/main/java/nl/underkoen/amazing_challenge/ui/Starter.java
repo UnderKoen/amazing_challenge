@@ -2,6 +2,7 @@ package nl.underkoen.amazing_challenge.ui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import nl.underkoen.amazing_challenge.controllers.PriceTable;
 import nl.underkoen.amazing_challenge.controllers.Runner;
 import nl.underkoen.amazing_challenge.models.Glade;
 
@@ -11,6 +12,7 @@ import nl.underkoen.amazing_challenge.models.Glade;
 public class Starter extends Application {
     private EditorView editorView;
     private MapView mapView;
+    private PriceView priceView;
     private Glade currentGlade;
     private Thread run;
 
@@ -29,8 +31,10 @@ public class Starter extends Application {
             }
         };
         mapView = new MapView(this::update);
+        priceView = new PriceView();
 
         mapView.show();
+        priceView.show();
         editorView.show();
     }
 
@@ -42,7 +46,7 @@ public class Starter extends Application {
                 Glade runGlade = new Glade(currentGlade.getMap());
                 mapView.updateGlade(runGlade);
 
-                Runner.compileAndRun(code, runGlade);
+                Runner.compileAndRun(code, runGlade, priceView.getPrices());
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
