@@ -30,7 +30,6 @@ public abstract class CodeRotation implements CodeConnection {
     }
 
     public static CodeRotation getBestRotationWithTurn(int from, int to, int turn, PriceTable priceTable) {
-        if (turn == 0) return null;
         RotationWithTurn defaultConnection = new RotationWithTurn(from, to, turn);
 
         List<CodeRotation> connections = List.of(defaultConnection/*, loopConnection*/);
@@ -72,18 +71,25 @@ public abstract class CodeRotation implements CodeConnection {
     }
 
     protected static class RotationWithTurn extends CodeRotation {
+        public static final int WRONG = 10000;
+        public static boolean random = false;
+
         private int turn;
 
         public RotationWithTurn(int from, int to, int turn) {
             super(from, to);
             this.turn = turn;
+            random = false;
         }
 
         @Override
         public String generateCode() {
             switch (turn) {
                 case 0 -> {
-                    return "NEED TO MAKE COMPASS";
+                    random = true;
+                    return "zolang kompas != " + to + " {\n" +
+                            "draaiLinks\n" +
+                            "}\n";
                 }
                 case 1 -> {
                     int diff = from - to;
@@ -133,16 +139,17 @@ public abstract class CodeRotation implements CodeConnection {
         public int getPrice(PriceTable priceTable) {
             switch (turn) {
                 case 0 -> {
-                    return 0;
+                    return priceTable.getWhileLine() + priceTable.getFunctionLine() + priceTable.getLeft() * 4 + priceTable.getUseCompass() * 4 + priceTable.getCompare() * 5;
                 }
                 case 1 -> {
                     int diff = from - to;
-                    if (diff == 0) return getSingle(priceTable) * 2;
+                    if (diff == 0) return 0;
 
-                    if (Math.abs(diff) == 2) return priceTable.getFunctionLine() * 3 + priceTable.getRight() + priceTable.getForward() + priceTable.getBack();
+                    if (Math.abs(diff) == 2) return getSingle(priceTable);
 
-                    if (diff == -3 || diff == 1) return 0;
-                    if (diff == 3 || diff == -1) return getSingle(priceTable);
+                    if (diff == -3 || diff == 1)
+                        return getBackward(priceTable) + getForward(priceTable) + getSingle(priceTable) + WRONG;
+                    if (diff == 3 || diff == -1) return getBackward(priceTable) + getForward(priceTable) + WRONG;
 
                     return 0;
                 }
@@ -159,12 +166,13 @@ public abstract class CodeRotation implements CodeConnection {
                 }
                 case 3 -> {
                     int diff = from - to;
-                    if (diff == 0) return priceTable.getFunctionLine() * 2 + priceTable.getForward() + priceTable.getBack();
+                    if (diff == 0) return 0;
 
-                    if (Math.abs(diff) == 2) return priceTable.getFunctionLine() * 3 + priceTable.getLeft() + priceTable.getForward() + priceTable.getBack();
+                    if (Math.abs(diff) == 2) return getSingle(priceTable);
 
-                    if (diff == -3 || diff == 1) return getSingle(priceTable);
-                    if (diff == 3 || diff == -1) return 0;
+                    if (diff == -3 || diff == 1) return getBackward(priceTable) + getForward(priceTable) + WRONG;
+                    if (diff == 3 || diff == -1)
+                        return getBackward(priceTable) + getForward(priceTable) + getSingle(priceTable) + WRONG;
 
                     return 0;
                 }
@@ -174,6 +182,14 @@ public abstract class CodeRotation implements CodeConnection {
 
         protected int getSingle(PriceTable priceTable) {
             return priceTable.getFunctionLine() + priceTable.getRight();
+        }
+
+        protected int getForward(PriceTable priceTable) {
+            return priceTable.getFunctionLine() + priceTable.getForward();
+        }
+
+        protected int getBackward(PriceTable priceTable) {
+            return priceTable.getFunctionLine() + priceTable.getBack();
         }
     }
 }

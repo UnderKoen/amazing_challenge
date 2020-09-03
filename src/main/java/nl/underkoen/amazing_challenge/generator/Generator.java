@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -96,11 +97,25 @@ public class Generator {
         return graph;
     }
 
+    private static Random rnd = new Random();
+
     private static boolean addEdge(Graph<Griever, CodeConnection> graph, Griever p1, Griever p2, Glade glade, PriceTable priceTable) {
         Tile t2 = glade.getTile(p2.getPosition());
         if (t2.getMapType() == Tile.MapType.TURN) {
             if (t2.getNumber() == 0) {
-                //TODO
+                int r = rnd.nextInt();
+                p2 = p2.withRotation(r);
+                graph.addVertex(p2);
+                CodeLine codeConnection = CodeLine.getBestLine(p1.getPosition(), p2.getPosition(), glade, priceTable);
+
+                graph.addEdge(p1, p2, codeConnection);
+                graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
+
+                for (int i = 0; i < 4; i++) {
+                    CodeConnection rot = CodeRotation.getBestRotationWithTurn(r, i, 0, priceTable);
+                    graph.addEdge(p2, p2.withRotation(i), rot);
+                    graph.setEdgeWeight(rot, rot.getPrice(priceTable));
+                }
             } else {
                 CodeLine codeConnection = CodeLine.getBestLine(p1.getPosition(), p2.getPosition(), glade, priceTable);
 
@@ -137,14 +152,6 @@ public class Generator {
         return o1.getValue().getNumber() - o2.getValue().getNumber();
     };
 
-    public static int current = 0;
-    public static int max = 0;
-
-    protected static PrintStream out() {
-        CustomPrintStream printStream = (CustomPrintStream) System.out;
-        return printStream.getOut();
-    }
-
     public static String generate(Glade glade, PriceTable priceTable) {
         Graph<Griever, CodeConnection> graph = createGraph(glade, priceTable);
         List<Griever> route = getRoute(graph, glade);
@@ -179,14 +186,18 @@ public class Generator {
             }
         }
 
+        System.out.println(best);
 
+
+        String pretend = "";
         StringBuilder completeCode = new StringBuilder();
         for (CodeConnection codeConnection : best) {
             completeCode.append(codeConnection.generateCode()).append("\n");
         }
 
-        if (CodeLine.LoopLine.getOffset() != 0) return "gebruik a\n\n" + completeCode.toString();
-        return completeCode.toString();
+        if (CodeLine.LoopLine.getOffset() != 0) pretend += "gebruik a\n";
+        if (CodeRotation.RotationWithTurn.random) pretend += "gebruik kompas\n";
+        return pretend + completeCode.toString();
     }
 
     private static void addEdges(Graph<Griever, CodeConnection> graph, Graph<Griever, List> route, Griever start, List<Griever> path, PriceTable priceTable) {
