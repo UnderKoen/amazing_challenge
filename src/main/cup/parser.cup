@@ -74,7 +74,8 @@ expression ::= expression:e1 SPACE PLUS SPACE expression:e2         {: RESULT = 
             |  COLOR_EYE                                            {: RESULT = Expression.colorEye(); :}
             |  COMPASS                                              {: RESULT = Expression.compass(); :};
 
-while ::= WHILE SPACE comparison:c SPACE OPEN NEW_LINE programBlock:p CLOSE {: RESULT = Statement.whileStat(c, p); :};
+while ::= WHILE SPACE comparison:c SPACE OPEN NEW_LINE programBlock:p CLOSE {: RESULT = Statement.whileStat(c, p); :}
+       |  WHILE SPACE comparison:c SPACE OPEN NEW_LINE programBlock:p CLOSE SPACE ELSE SPACE OPEN NEW_LINE programBlock:e CLOSE {: RESULT = Statement.whileStat(c, p, e); :};
 
 comparison ::= expression:e1 SPACE EQUAL SPACE expression:e2        {: RESULT = Comparison.equal(e1, e2); :}
             |  expression:e1 SPACE NOT_EQUAL SPACE expression:e2    {: RESULT = Comparison.notEqual(e1, e2); :}

@@ -15,6 +15,7 @@ plugins {
 
 dependencies {
     compile("com.github.UnderKoen.EduLogo:Editor:1.15")
+    compile("org.jgrapht:jgrapht-core:1.3.0")
 }
 
 apply(plugin = "org.openjfx.javafxplugin")

@@ -1,6 +1,6 @@
 package nl.underkoen.amazing_challenge.controllers;
 
-import nl.edulogo.core.Position;
+import nl.underkoen.amazing_challenge.models.Position;
 import nl.underkoen.amazing_challenge.models.Tile;
 
 import java.util.HashMap;
@@ -45,7 +45,7 @@ public class MapController {
         Tile next = context.glade.getTile(x + dx, y + dy);
 
         if (next.getMapType() == Tile.MapType.OBSTACLE) {
-            context.spendMoney(context.priceTable.getPushObstacle());
+            context.spendMoney(context.priceTable.getPushObstacle(), "muur duwen");
 
             sleep();
             return;
@@ -85,7 +85,7 @@ public class MapController {
             case BONUS -> {
                 int score = (int) Math.pow(2, number);
                 context.earnMoney(score);
-                System.out.println("Bonus van " + score + "gepakt");
+                System.out.println("Bonus van " + score + " gepakt");
 
                 current = new Tile(Tile.MapType.COLOR, 4);
             }
@@ -143,7 +143,7 @@ public class MapController {
 
     private void sleep() {
         try {
-            Thread.sleep(500);
+            Thread.sleep(context.priceTable.getDelay());
         } catch (InterruptedException e) {
             throw new RuntimeException("Program stopped");
         }

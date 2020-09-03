@@ -32,7 +32,7 @@ public class Context {
     }
 
     public void spendMoney(int amount, String what) {
-        System.out.println("Kosten voor " + what + " " + amount);
+        System.out.println("Kosten voor " + what + ": " + amount);
         spendMoney(amount);
     }
 

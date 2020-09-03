@@ -73,6 +73,8 @@ public class FXPrice implements FXView {
                 priceTable::setFunctionLine, priceTable::getFunctionLine);
         addField(software, "toekenning",
                 priceTable::setAssignmentLine, priceTable::getAssignmentLine);
+        addField(software, "delay",
+                priceTable::setDelay, priceTable::getDelay);
 
 
         columns.getChildren().addAll(hardware, new Label("      "), usage, new Label("      "), software);

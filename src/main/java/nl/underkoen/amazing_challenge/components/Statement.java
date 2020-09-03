@@ -35,7 +35,20 @@ public class Statement implements Runnable {
             while (comparison.calculate(c)) {
                 program.run(c);
             }
-        }, PriceTable::getWhileLine);
+        }, priceTable -> priceTable.getWhileLine() + program.getPrice(priceTable));
+    }
+
+    //TODO ask boose
+    public static Statement whileStat(Comparison comparison, ProgramBlock program, ProgramBlock elseProgram) {
+        return new Statement(c -> {
+            if (!comparison.calculate(c)) {
+                elseProgram.run(c);
+                return;
+            }
+            while (comparison.calculate(c)) {
+                program.run(c);
+            }
+        }, priceTable -> priceTable.getWhileLine() + program.getPrice(priceTable) + elseProgram.getPrice(priceTable));
     }
 
     public static Statement ifElse(If i, ProgramBlock elseProgram) {
@@ -45,7 +58,7 @@ public class Statement implements Runnable {
             } else {
                 if (elseProgram != null) elseProgram.run(c);
             }
-        }, PriceTable::getIfLine);
+        }, priceTable -> priceTable.getIfLine() + i.program.getPrice(priceTable) + (elseProgram == null ? 0 : elseProgram.getPrice(priceTable)));
     }
 
     public static Statement forward() {

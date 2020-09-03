@@ -12,9 +12,13 @@ public class CustomPrintStream extends PrintStream {
     private final Consumer<String> onOut;
     private final StringBuilder stringBuilder = new StringBuilder();
 
-    public CustomPrintStream(OutputStream out, Consumer<String> onOut) {
+    public CustomPrintStream(PrintStream out, Consumer<String> onOut) {
         super(out);
         this.onOut = onOut;
+    }
+
+    public PrintStream getOut() {
+        return (PrintStream) super.out;
     }
 
     private void add(String s) {

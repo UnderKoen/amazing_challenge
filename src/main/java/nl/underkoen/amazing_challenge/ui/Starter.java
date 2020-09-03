@@ -2,9 +2,11 @@ package nl.underkoen.amazing_challenge.ui;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
-import nl.underkoen.amazing_challenge.controllers.PriceTable;
 import nl.underkoen.amazing_challenge.controllers.Runner;
+import nl.underkoen.amazing_challenge.generator.Generator;
 import nl.underkoen.amazing_challenge.models.Glade;
+
+import java.util.function.Consumer;
 
 /**
  * @author Under_Koen
@@ -28,6 +30,12 @@ public class Starter extends Application {
                 if (run != null) {
                     run.interrupt();
                 }
+            }
+
+            @Override
+            protected void generateCodeForGlade(Consumer<String> setText) {
+                run = new Thread(() -> setText.accept(Generator.generate(currentGlade, priceView.getPrices())));
+                run.start();
             }
         };
         mapView = new MapView(this::update);

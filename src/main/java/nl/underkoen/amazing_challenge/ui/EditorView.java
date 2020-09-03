@@ -1,5 +1,6 @@
 package nl.underkoen.amazing_challenge.ui;
 
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -57,10 +58,16 @@ public abstract class EditorView {
         stop.setAccelerator(new KeyCodeCombination(KeyCode.E, mod));
         stop.setOnAction(this::stop);
 
-        runMenu.getItems().addAll(run, stop);
+        MenuItem gen = new MenuItem("Generate");
+        gen.setAccelerator(new KeyCodeCombination(KeyCode.G, mod));
+        gen.setOnAction(o -> generateCodeForGlade(s -> Platform.runLater(() -> editor.setText(s))));
+
+        runMenu.getItems().addAll(run, stop, gen);
 
         editor.getMenuBar().getMenus().addAll(runMenu);
     }
+
+    protected abstract void generateCodeForGlade(Consumer<String> setText);
 
     private void run(Object o) {
         run.accept(editor.getText());

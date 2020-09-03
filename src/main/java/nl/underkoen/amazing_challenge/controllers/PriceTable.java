@@ -27,6 +27,7 @@ public class PriceTable {
     private int assignmentLine = 10;
 
     private int startMoney = 2020;
+    private int delay = 100;
 
     public int getBuyCompass() {
         return buyCompass;
@@ -186,5 +187,13 @@ public class PriceTable {
 
     public void setStartMoney(int startMoney) {
         this.startMoney = startMoney;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 }
