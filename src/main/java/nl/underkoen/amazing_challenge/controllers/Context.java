@@ -1,5 +1,6 @@
 package nl.underkoen.amazing_challenge.controllers;
 
+import nl.underkoen.amazing_challenge.Main;
 import nl.underkoen.amazing_challenge.models.Glade;
 
 /**
@@ -32,7 +33,7 @@ public class Context {
     }
 
     public void spendMoney(int amount, String what) {
-        System.out.println("Kosten voor " + what + ": " + amount);
+        if (Main.PRINT_COST) System.out.println("Kosten voor " + what + ": " + amount);
         spendMoney(amount);
     }
 

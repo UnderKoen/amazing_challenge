@@ -65,10 +65,12 @@ public abstract class CodeLine implements CodeConnection {
         FinalLine finalConnection = toTile.getMapType() == Tile.MapType.G0AL && toTile.getNumber() == glade.getHighestGoal() ? new FinalLine(from, to, glade) : null;
 
         List<CodeLine> connections = Arrays.asList(defaultConnection, loopConnection, finalConnection);
-        return connections.stream()
+
+        CodeLine line = connections.stream()
                 .filter(Objects::nonNull)
                 .reduce((c1, c2) -> c1.getPrice(priceTable) <= c2.getPrice(priceTable) ? c1 : c2)
                 .orElseThrow();
+        return line;
     }
 
     protected static class DefaultLine extends CodeLine {
@@ -87,7 +89,8 @@ public abstract class CodeLine implements CodeConnection {
         }
 
         protected int singlePrice(PriceTable priceTable) {
-            return priceTable.getFunctionLine() + priceTable.getForward();
+            int dis = from.distance(to);
+            return priceTable.getFunctionLine() + priceTable.getForward() * dis;
         }
     }
 
@@ -164,6 +167,19 @@ public abstract class CodeLine implements CodeConnection {
 
         @Override
         public int getRunPrice(PriceTable priceTable) {
+            int dis = from.distance(to);
+            if (orginal instanceof LoopLine) {
+                LoopLine loopLine = (LoopLine) orginal;
+                return loopLine.initPrice(priceTable)
+                        + priceTable.getAssignment() * dis
+                        + priceTable.getBack() * dis
+                        + priceTable.getCompare() * (dis + 1)
+                        + priceTable.getCalculate() * dis;
+
+            }
+            if (orginal instanceof DefaultLine) {
+                return priceTable.getFunctionLine() + priceTable.getForward() * dis;
+            }
             return orginal.getPrice(priceTable);
         }
 

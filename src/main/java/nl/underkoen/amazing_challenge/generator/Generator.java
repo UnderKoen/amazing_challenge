@@ -74,27 +74,46 @@ public class Generator {
         }
 
         for (Position position : positions) {
+            Tile tile = glade.getTile(position);
+            if (tile.getMapType() == Tile.MapType.BOMB && tile.getNumber() == 1) continue;
             for (int r1 = 0; r1 < 4; r1++) {
-                for (int r2 = 0; r2 < 4; r2++) {
-                    if (r1 == r2) continue;
-                    Tile tile = glade.getTile(position);
+                int r2 = (r1 + 1) % 4;
+                addRotateEdge(graph, new Griever(position, r1), new Griever(position, r2), glade, priceTable);
 
-                    CodeRotation codeConnection = null;
-                    if (tile.getMapType() == Tile.MapType.TURN) {
-                        codeConnection = CodeRotation.getBestRotationWithTurn(r1, r2, tile.getNumber(), priceTable);
-                        if (codeConnection == null) continue;
-                    }
-
-                    if (codeConnection == null) codeConnection = CodeRotation.getBestRotation(r1, r2, priceTable);
-                    if (codeConnection == null) continue;
-
-                    graph.addEdge(new Griever(position, r1), new Griever(position, r2), codeConnection);
-                    graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
-                }
+                r2 = (r1 + 3) % 4;
+                addRotateEdge(graph, new Griever(position, r1), new Griever(position, r2), glade, priceTable);
             }
         }
 
         return graph;
+    }
+
+    private static void addRotateEdge(Graph<Griever, CodeConnection> graph, Griever p1, Griever p2, Glade glade, PriceTable priceTable) {
+        int r1 = p1.getRotation();
+        int r2 = p2.getRotation();
+        if (r1 == r2) return;
+        Tile tile = glade.getTile(p1.getPosition());
+
+        if (tile.getMapType() == Tile.MapType.TURN && tile.getNumber() == 0) {
+            CodeRotation codeConnection = CodeRotation.getBestRotationWithTurn(r1, r2, tile.getNumber(), priceTable);
+            if (codeConnection == null) return;
+            graph.addEdge(p1, p2, codeConnection);
+            graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
+            return;
+        }
+
+        if (tile.getMapType() == Tile.MapType.TURN) {
+            int extraRot = tile.getNumber();
+            r2 += extraRot;
+            r2 %= 4;
+            if (r1 == r2) return;
+        }
+
+        CodeConnection codeConnection = CodeRotation.getBestRotation(r1, r2, priceTable);
+        if (codeConnection == null) return;
+
+        graph.addEdge(p1.withRotation(r1), p2.withRotation(r2), codeConnection);
+        graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
     }
 
     private static Random rnd = new Random();
@@ -121,6 +140,8 @@ public class Generator {
 
                 graph.addEdge(p1, p2.withRotation((p2.getRotation() + t2.getNumber()) % 4), codeConnection);
                 graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
+
+                addReverse(graph, p1, p2, glade, priceTable);
             }
             return true;
         } else if (graph.containsVertex(p2)) {
@@ -129,11 +150,30 @@ public class Generator {
             graph.addEdge(p1, p2, codeConnection);
             graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
 
+            addReverse(graph, p1, p2, glade, priceTable);
+            return false;
+        } else return true;
+    }
+
+    private static void addReverse(Graph<Griever, CodeConnection> graph, Griever p1, Griever p2, Glade glade, PriceTable priceTable) {
+        Tile t1 = glade.getTile(p1.getPosition());
+        if (t1.getMapType() == Tile.MapType.TURN) {
+            if (t1.getNumber() == 0) {
+
+            } else {
+                CodeLine codeConnection = CodeLine.getBestLine(p1.getPosition(), p2.getPosition(), glade, priceTable);
+
+                CodeLine reverse = new CodeLine.ReverseLine(codeConnection);
+                graph.addEdge(p2, p1.withRotation((p2.getRotation() + t1.getNumber()) % 4), reverse);
+                graph.setEdgeWeight(reverse, reverse.getPrice(priceTable));
+            }
+        } else if (graph.containsVertex(p2)) {
+            CodeLine codeConnection = CodeLine.getBestLine(p1.getPosition(), p2.getPosition(), glade, priceTable);
+
             CodeLine reverse = new CodeLine.ReverseLine(codeConnection);
             graph.addEdge(p2, p1, reverse);
             graph.setEdgeWeight(reverse, reverse.getPrice(priceTable));
-            return false;
-        } else return true;
+        }
     }
 
     private static List<Griever> getRoute(Graph<Griever, CodeConnection> graph, Glade glade) {
