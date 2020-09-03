@@ -29,6 +29,7 @@ public class Generator {
             for (int x = 0; x < 20; x++) {
                 Tile tile = glade.getTile(x, y);
                 Position pos = new Position(x, y);
+                if (tile.getMapType() == Tile.MapType.BOMB && tile.getNumber() == 0) continue;
                 if (tile.getMapType() != Tile.MapType.OBSTACLE) {
                     positions.add(pos);
                     for (int i = 0; i < 4; i++) {
@@ -45,23 +46,27 @@ public class Generator {
             switch (griever.getRotation()) {
                 case 2 -> {
                     for (int y = position.getY() + 1; y < 20; y++) {
-                        if (addEdge(graph, griever, griever.withPosition(new Position(position.getX(), y)), glade, priceTable)) break;
+                        if (addEdge(graph, griever, griever.withPosition(new Position(position.getX(), y)), glade, priceTable))
+                            break;
                     }
                 }
                 case 1 -> {
                     for (int x = position.getX() + 1; x < 20; x++) {
-                        if (addEdge(graph, griever, griever.withPosition(new Position(x, position.getY())), glade, priceTable)) break;
+                        if (addEdge(graph, griever, griever.withPosition(new Position(x, position.getY())), glade, priceTable))
+                            break;
                     }
                 }
                 case 0 -> {
                     for (int y = position.getY() - 1; y > 0; y--) {
-                        if (addEdge(graph, griever, griever.withPosition(new Position(position.getX(), y)), glade, priceTable)) break;
+                        if (addEdge(graph, griever, griever.withPosition(new Position(position.getX(), y)), glade, priceTable))
+                            break;
                     }
 
                 }
                 case 3 -> {
                     for (int x = position.getX() - 1; x > 0; x--) {
-                        if (addEdge(graph, griever, griever.withPosition(new Position(x, position.getY())), glade, priceTable)) break;
+                        if (addEdge(graph, griever, griever.withPosition(new Position(x, position.getY())), glade, priceTable))
+                            break;
                     }
                 }
             }
@@ -94,7 +99,6 @@ public class Generator {
     private static boolean addEdge(Graph<Griever, CodeConnection> graph, Griever p1, Griever p2, Glade glade, PriceTable priceTable) {
         Tile t2 = glade.getTile(p2.getPosition());
         if (t2.getMapType() == Tile.MapType.TURN) {
-            System.out.println(t2);
             if (t2.getNumber() == 0) {
                 //TODO
             } else {
@@ -141,73 +145,54 @@ public class Generator {
         Graph<Griever, CodeConnection> graph = createGraph(glade, priceTable);
         List<Griever> route = getRoute(graph, glade);
 
+        Graph<Griever, List> routes = new DirectedWeightedMultigraph<>(List.class);
+        route.forEach(routes::addVertex);
+
         Griever start = route.remove(0);
-        current = 0;
-        max = 0;
-        for (int i = 1; i <= route.size() / 4; i++) {
-            max += Math.pow(4, i);
+
+        addEdges(graph, routes, start, route.subList(0, 4), priceTable);
+
+        for (int i = 0; i < route.size() - 4; i++) {
+            Griever s = route.get(i);
+            addEdges(graph, routes, s, route.subList(i / 4 * 4 + 4, i / 4* 4 + 8), priceTable);
         }
 
-        StringBuilder completeCode = new StringBuilder();
-        for (CodeConnection codeConnection : recursion(graph, start, route, priceTable)) {
-            completeCode.append(codeConnection.generateCode()).append("\n");
-        }
-
-        if (CodeLine.LoopLine.getOffset() != 0) return "gebruik a\n\n" +  completeCode.toString();
-        return completeCode.toString();
-    }
-
-    private static List<CodeConnection> recursion(Graph<Griever, CodeConnection> graph, Griever start, List<Griever> path, PriceTable priceTable) {
-        printProgress();
-        path = new ArrayList<>(path);
-
-        if (path.isEmpty()) return new ArrayList<>();
-        if (path.size() == 4) {
-            SingleSourcePaths<Griever, CodeConnection> paths = new DijkstraShortestPath<>(graph).getPaths(start);
-
-            int min = -1;
-            List<CodeConnection> best = null;
-            for (Griever griever : path) {
-                printProgress();
-                GraphPath<Griever, CodeConnection> graphPath = paths.getPath(griever);
-                if (graphPath == null) continue;
-                List<CodeConnection> route = graphPath.getEdgeList();
-
-                int price = route.stream().mapToInt(c -> c.getPrice(priceTable)).sum();
-
-                if (min == -1 || price < min) {
-                    min = price;
-                    best = route;
-                }
-            }
-
-            return best;
-        }
-
-        SingleSourcePaths<Griever, CodeConnection> paths = new DijkstraShortestPath<>(graph).getPaths(start);
-        List<Griever> current = new ArrayList<>();
-        for (int i = 0; i < 4; i++) current.add(path.remove(0));
+        SingleSourcePaths<Griever, List> paths = new DijkstraShortestPath<>(routes).getPaths(start);
 
         int min = -1;
         List<CodeConnection> best = null;
-        for (Griever griever : current) {
-            GraphPath<Griever, CodeConnection> graphPath = paths.getPath(griever);
-            if (graphPath == null) continue;
+        for (int i = 1; i <= 4; i++) {
+            Griever finish = route.get(route.size() - i);
+            List<CodeConnection> r = new ArrayList<>();
 
-            List<CodeConnection> route = graphPath.getEdgeList();
-            route.addAll(recursion(graph, griever, path, priceTable));
+            paths.getPath(finish).getEdgeList().forEach(r::addAll);
 
-            int price = route.stream().mapToInt(c -> c.getPrice(priceTable)).sum();
+            int price = r.stream().mapToInt(c -> c.getPrice(priceTable)).sum();
 
             if (min == -1 || price < min) {
                 min = price;
-                best = route;
+                best = r;
             }
         }
-        return best;
+
+
+        StringBuilder completeCode = new StringBuilder();
+        for (CodeConnection codeConnection : best) {
+            completeCode.append(codeConnection.generateCode()).append("\n");
+        }
+
+        if (CodeLine.LoopLine.getOffset() != 0) return "gebruik a\n\n" + completeCode.toString();
+        return completeCode.toString();
     }
 
-    private static void printProgress() {
-        out().printf("\rGenerating route %.1f%% (%s/%s)", current * 1.0 / max * 100.0, current++, max);
+    private static void addEdges(Graph<Griever, CodeConnection> graph, Graph<Griever, List> route, Griever start, List<Griever> path, PriceTable priceTable) {
+        SingleSourcePaths<Griever, CodeConnection> paths = new DijkstraShortestPath<>(graph).getPaths(start);
+        for (Griever griever : path) {
+            GraphPath<Griever, CodeConnection> graphPath = paths.getPath(griever);
+            List<CodeConnection> r = graphPath.getEdgeList();
+            int price = r.stream().mapToInt(c -> c.getPrice(priceTable)).sum();
+            route.addEdge(start, griever, r);
+            route.setEdgeWeight(r, price);
+        }
     }
 }
