@@ -2,6 +2,7 @@ package nl.underkoen.amazing_challenge.ui.fx;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
@@ -17,7 +18,7 @@ import java.util.function.Supplier;
 /**
  * @author Under_Koen
  */
-public class FXPrice implements FXView {
+public abstract class FXPrice implements FXView {
     private final PriceTable priceTable = new PriceTable();
     private final StackPane node;
 
@@ -77,6 +78,11 @@ public class FXPrice implements FXView {
                 priceTable::setDelay, priceTable::getDelay);
 
 
+        Button reset = new Button("Reset");
+        reset.setOnAction(event -> reset());
+        software.getChildren().add(reset);
+
+
         columns.getChildren().addAll(hardware, new Label("      "), usage, new Label("      "), software);
         columns.setAlignment(Pos.CENTER);
 
@@ -112,4 +118,6 @@ public class FXPrice implements FXView {
     public PriceTable getPriceTable() {
         return priceTable;
     }
+
+    public abstract void reset();
 }

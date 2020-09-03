@@ -113,6 +113,10 @@ public class Generator {
 
             graph.addEdge(p1, p2, codeConnection);
             graph.setEdgeWeight(codeConnection, codeConnection.getPrice(priceTable));
+
+            CodeLine reverse = new CodeLine.ReverseLine(codeConnection);
+            graph.addEdge(p2, p1, reverse);
+            graph.setEdgeWeight(reverse, reverse.getPrice(priceTable));
             return false;
         } else return true;
     }

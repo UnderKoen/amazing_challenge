@@ -9,12 +9,27 @@ import nl.underkoen.amazing_challenge.ui.fx.FXPrice;
  * @author Under_Koen
  */
 public class PriceView {
-    private final FXPrice price;
+    private FXPrice price;
     private final FXDisplay<FXPrice> display;
 
     public PriceView() {
-        price = new FXPrice();
+        price = new FXPrice() {
+            @Override
+            public void reset() {
+                resetView();
+            }
+        };
         display = new FXDisplay<>(new Size(600, 700), price);
+    }
+
+    public void resetView() {
+        price = new FXPrice() {
+            @Override
+            public void reset() {
+                resetView();
+            }
+        };
+        display.setView(price);
     }
 
     public void show() {

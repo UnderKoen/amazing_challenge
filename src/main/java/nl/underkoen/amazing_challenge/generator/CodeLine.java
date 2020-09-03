@@ -2,7 +2,6 @@ package nl.underkoen.amazing_challenge.generator;
 
 import nl.underkoen.amazing_challenge.controllers.PriceTable;
 import nl.underkoen.amazing_challenge.models.Glade;
-import nl.underkoen.amazing_challenge.models.Griever;
 import nl.underkoen.amazing_challenge.models.Position;
 import nl.underkoen.amazing_challenge.models.Tile;
 
@@ -152,6 +151,25 @@ public abstract class CodeLine implements CodeConnection {
 
         protected int initPrice(PriceTable priceTable) {
             return priceTable.getWhileLine() + priceTable.getFunctionLine();
+        }
+    }
+
+    public static class ReverseLine extends CodeLine {
+        private final CodeLine orginal;
+
+        public ReverseLine(CodeLine orginal) {
+            super(orginal.from, orginal.to, orginal.glade);
+            this.orginal = orginal;
+        }
+
+        @Override
+        public int getRunPrice(PriceTable priceTable) {
+            return orginal.getPrice(priceTable);
+        }
+
+        @Override
+        public String generateCode() {
+            return orginal.generateCode().replace("Vooruit", "Achteruit");
         }
     }
 }
