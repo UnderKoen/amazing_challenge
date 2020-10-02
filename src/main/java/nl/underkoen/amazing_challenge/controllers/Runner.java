@@ -31,10 +31,5 @@ public class Runner {
         } catch (CompleteException e) {
             System.out.println(e.getMessage());
         }
-
-        System.out.println("Geld verdient: " + context.getMoneyEarned());
-        System.out.println("Geld uitgegeven: " + context.getMoneySpend());
-        System.out.println("Eind kapitaal: " + context.getRemainingMoney());
-        System.out.println("Variable waardes: " + context.variableStorage);
     }
 }

@@ -42,7 +42,6 @@ public class Starter extends Application {
         priceView = new PriceView();
 
         mapView.show();
-        priceView.show();
         editorView.show();
     }
 

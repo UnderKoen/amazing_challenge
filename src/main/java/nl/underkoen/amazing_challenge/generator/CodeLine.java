@@ -178,7 +178,7 @@ public abstract class CodeLine implements CodeConnection {
 
             }
             if (orginal instanceof DefaultLine) {
-                return priceTable.getFunctionLine() + priceTable.getForward() * dis;
+                return priceTable.getFunctionLine() + priceTable.getBack() * dis;
             }
             return orginal.getPrice(priceTable);
         }

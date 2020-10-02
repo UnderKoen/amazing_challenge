@@ -43,11 +43,11 @@ public class MapView {
     }
 
     public void show() {
-        mapDisplay.show();
-        mapDisplay.setTitle("Glade viewer");
-
-        editorDisplay.show();
-        editorDisplay.setTitle("Glade editor");
+//        mapDisplay.show();
+//        mapDisplay.setTitle("Glade viewer");
+//
+//        editorDisplay.show();
+//        editorDisplay.setTitle("Glade editor");
 
         run(null);
     }

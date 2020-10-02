@@ -8,26 +8,18 @@ import java.util.Map;
  */
 public class VariableStorage {
     private final Context context;
-    private final Map<String, Integer> variables = new HashMap<>();
+    private final Map<String, Boolean> variables = new HashMap<>();
 
     public VariableStorage(Context context) {
         this.context = context;
     }
 
-    public int read(String var) {
-        if (!variables.containsKey(var)) throw new RuntimeException(String.format("Variable %s is not bought", var));
-        return variables.get(var);
+    public boolean read(String var) {
+        return variables.getOrDefault(var, false);
     }
 
-    public void store(String var, int val) {
-        context.spendMoney(context.priceTable.getAssignment(), "toewijzen variable (" + var + " = " + val + ")");
-        if (!variables.containsKey(var)) throw new RuntimeException(String.format("Variable %s is not bought", var));
+    public void store(String var, boolean val) {
         variables.put(var, val);
-    }
-
-    public void register(String val) {
-        context.spendMoney(context.priceTable.getBuyVariable(), "kopen variable (" + val + ")");
-        variables.put(val, 0);
     }
 
     @Override
